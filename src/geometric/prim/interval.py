@@ -9,6 +9,9 @@ class Interval:
             self.__min = b
             self.__max = a
 
+    def __hash__(self):
+        return 31 * hash(self.__min) + hash(self.__max)
+
     def __str__(self):
         return "[{}, {}]".format(self.__min, self.__max)
 
@@ -38,6 +41,41 @@ class Interval:
             return False
         return True
 
+    def endpoints(self):
+        return self.__min, self.__max
+
+    @classmethod
+    def min_order(cls, a, b):
+        if a.min < b.min:
+            return -1
+        if a.min > b.min:
+            return 1
+        if a.max < b.max:
+            return -1
+        if a.max > b.max:
+            return 1
+        return 0
+
+    @classmethod
+    def max_order(cls, a, b):
+        if a.max < b.max:
+            return -1
+        if a.max > b.max:
+            return 1
+        if a.min < b.min:
+            return -1
+        if a.min > b.min:
+            return 1
+        return 0
+
+    @classmethod
+    def length_order(cls, a, b):
+        if a.length < b.length:
+            return -1
+        if a.length > b.length:
+            return 1
+        return 0
+
     @property
     def max(self):
         return self.__max
@@ -45,6 +83,10 @@ class Interval:
     @property
     def min(self):
         return self.__min
+
+    @property
+    def length(self):
+        return self.__max - self.__min
 
     def __compare(self, a, b):
         if self.__cmp:
@@ -57,4 +99,3 @@ class Interval:
 
     def __less(self, a, b):
         return self.__compare(a, b) < 0
-
