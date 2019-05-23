@@ -1,10 +1,12 @@
-from functools  import cmp_to_key
-from statistics import median
+from functools                   import cmp_to_key
+from statistics                  import median
+
+from src.abc.static              import Static
 
 from src.geometric.prim.interval import Interval
 
 
-class IntervalTree:
+class IntervalTree(Static):
 
     class __Node:
 
@@ -21,12 +23,11 @@ class IntervalTree:
         if intervals is None:
             raise ValueError("Invalid argument 'intervals' of None Type")
 
-        intervals   = set(intervals)
-        self.__size = len(intervals)
+        self.__intervals = set(intervals)
         self.__root = self.__build(intervals)
 
     def __len__(self):
-        return self.__size
+        return len(self.__intervals)
 
     def __build(self, intervals):
         if len(intervals) == 0:
@@ -48,6 +49,9 @@ class IntervalTree:
         v.right = self.__build(i_right)
 
         return v
+
+    def unbuild(self):
+        return self.__intervals
 
     @staticmethod
     def __build_mid_intervals(x_mid, intervals):
