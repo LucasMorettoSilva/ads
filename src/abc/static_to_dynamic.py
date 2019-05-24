@@ -21,6 +21,9 @@ class StaticToDynamic(abc.ABC):
         if x is None:
             raise ValueError("Illegal argument of None Type")
 
+        if x in self.__insertions:
+            return
+
         self.__insertions.add(x)
         s = set()
         s.add(x)
