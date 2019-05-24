@@ -202,5 +202,3 @@ class TestInterval(unittest.TestCase):
         b = a
         self.assertEqual(0, Interval.length_order(a, b))
         self.assertEqual(0, Interval.length_order(b, a))
-
-
