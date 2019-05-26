@@ -53,7 +53,7 @@ class TestIntervalTree(unittest.TestCase):
     def test_query_withEmptyTree_shouldReturnEmptySet(self):
         tree = IntervalTree([])
         for i in range(1000):
-            a = Interval(random.uniform(0, i), random.uniform(i, 1000))
+            a = random.uniform(0, i)
             self.assertEqual(set(), tree.query(a))
 
     def test_query_withPointNotInAnyInterval_shouldReturnEmptySet(self):

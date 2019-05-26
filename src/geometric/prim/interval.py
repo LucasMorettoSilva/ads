@@ -15,6 +15,9 @@ class Interval:
     def __str__(self):
         return "[{}, {}]".format(self.__min, self.__max)
 
+    def __repr__(self):
+        return "[{}, {}]".format(self.__min, self.__max)
+
     def __eq__(self, other):
         if self is other:
             return True
