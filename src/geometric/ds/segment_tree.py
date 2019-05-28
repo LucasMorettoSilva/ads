@@ -1,10 +1,9 @@
-from functools  import cmp_to_key
-from statistics import median
+from src.abc.static import Static
 
 from src.geometric.prim.interval import Interval
 
 
-class SegmentTree:
+class SegmentTree(Static):
 
     class __Node:
 
@@ -79,3 +78,6 @@ class SegmentTree:
             self.__query(v.left, point, res)
         else:
             self.__query(v.right, point, res)
+
+    def unbuild(self):
+        return self.__intervals

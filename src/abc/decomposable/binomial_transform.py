@@ -3,7 +3,7 @@ from src.abc.decomposable.transformation import Transformation
 
 class BinomialTransform(Transformation):
 
-    def __init__(self, struct, k=2):
+    def __init__(self, struct, k=6):
         super().__init__(struct)
         self.__d = [0]
         self.__k = k
@@ -37,4 +37,7 @@ class BinomialTransform(Transformation):
             self._p[i]  = None
             self.__d[i] = i - 1
             i += 1
+
+        if self._p[i] is not None:
+            s.update(self._p[i].unbuild())
         self._p[i] = self._struct(s)
