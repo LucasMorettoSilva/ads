@@ -67,6 +67,14 @@ class Point2D(Point):
         return 0
 
     @staticmethod
+    def collinear(a, b, c):
+        if a is None or \
+           b is None or \
+           c is None:
+            raise ValueError("Invalid argument of None Type")
+        return Point2D.area2(a, b, c) == 0
+
+    @staticmethod
     def ccw(a, b, c):
         if a is None or \
            b is None or \
