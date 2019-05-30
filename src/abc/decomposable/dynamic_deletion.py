@@ -24,11 +24,14 @@ class DynamicDeletion:
             content = list()
             m = math.sqrt(len(data))
             for e in data:
-                if len(content) == m:
+                if len(content) >= m:
                     self.__p.append(static(content))
                     content = list()
                 content.append(e)
                 self.__r[e] = len(self.__p)
+
+            if len(content) > 0:
+                self.__p.append(static(content))
 
     def __len__(self):
         return len(self.__r)
@@ -55,3 +58,10 @@ class DynamicDeletion:
 
         self.__p[self.__r[x]] = self.__static(s)
         del self.__r[x]
+
+    def all(self):
+        res = set()
+        for p in self.__p:
+            if p is not None:
+                res.update(p.unbuild())
+        return res

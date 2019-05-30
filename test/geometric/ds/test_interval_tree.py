@@ -24,7 +24,7 @@ class TestIntervalTree(unittest.TestCase):
         tree = IntervalTree(intervals)
         self.assertEqual(1, len(tree))
 
-    def test_constructor_withCopiesOfOneFiveHundredIntervals_shouldIgnoreCopiesAndConstructFiveHundredSizedTree(self):
+    def test_constructor_withDuplicatedIntervals_shouldIgnoreCopiesWhenBuildingTree(self):
         intervals = list()
         for i in range(500):
             for _ in range(10):
