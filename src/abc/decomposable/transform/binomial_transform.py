@@ -1,4 +1,4 @@
-from src.abc.decomposable.transformation import Transformation
+from src.abc.decomposable.transform.transformation import Transformation
 
 
 class BinomialTransform(Transformation):

@@ -8,6 +8,11 @@ class DecomposableSP(abc.ABC):
         raise NotImplementedError(
             "Must implement operator() function to use this base class")
 
+    @abc.abstractclassmethod
+    def operator_inverse(cls, a, b):
+        raise NotImplementedError(
+            "Must implement operator() function to use this base class")
+
     @abc.abstractmethod
     def query(self, x):
         raise NotImplementedError(

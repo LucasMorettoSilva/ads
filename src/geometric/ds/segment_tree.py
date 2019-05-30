@@ -1,9 +1,7 @@
-from src.abc.static import Static
-
 from src.geometric.prim.interval import Interval
 
 
-class SegmentTree(Static):
+class SegmentTree:
 
     class __Node:
 

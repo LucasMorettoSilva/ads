@@ -1,4 +1,4 @@
-from src.abc.decomposable.binary_transform import BinaryTransform
+from src.abc.decomposable.transform.binary_transform import BinaryTransform
 from src.abc.decomposable.decomposable_sp  import DecomposableSP
 
 

@@ -109,3 +109,10 @@ class IntervalTree(DecomposableSP):
             raise ValueError("Invalid argument of None Type")
         a.update(b)
         return a
+
+    @classmethod
+    def operator_inverse(cls, a, b):
+        if a is None or b is None:
+            raise ValueError("Invalid argument of None Type")
+        a.difference_update(b)
+        return a

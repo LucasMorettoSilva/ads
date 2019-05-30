@@ -1,6 +1,6 @@
 import math
 
-from src.abc.point import Point
+from src.geometric.prim.point import Point
 
 
 class Point2D(Point):

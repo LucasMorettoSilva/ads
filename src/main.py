@@ -3,15 +3,18 @@ import time
 
 import matplotlib.pyplot as plt
 
-from src.abc.decomposable.binomial_transform import BinomialTransform
+from src.abc.decomposable.dynamic.dynamic_insertion    import DynamicInsertion
 
-from src.geometric.prim.interval             import Interval
-from src.geometric.ds.dynamic_interval_tree  import DynamicIntervalTree
+from src.abc.decomposable.transform.binomial_transform import BinomialTransform
+
+from src.geometric.ds.interval_tree                    import IntervalTree
+
+from src.geometric.prim.interval                       import Interval
 
 
 def main():
-    a = DynamicIntervalTree()
-    b = DynamicIntervalTree(BinomialTransform(3))
+    a = DynamicInsertion(IntervalTree)
+    b = DynamicInsertion(IntervalTree, BinomialTransform(10))
 
     binomial = list()
     binary   = list()
