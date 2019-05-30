@@ -1,10 +1,10 @@
 class StaticToDynamic:
 
-    def __init__(self, struct, *args):
-        if len(args) > 1:
-            self._transform = args[0](struct)
-        else:
-            self._transform = args[0](struct)
+    def __init__(self, transform, static):
+        if transform is None:
+            raise ValueError("Invalid 'transform' of None Type")
+        self._transform = transform
+        self._transform.init(static)
 
     def __len__(self):
         return len(self._transform)

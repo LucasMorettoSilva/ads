@@ -3,8 +3,8 @@ from src.abc.decomposable.transformation import Transformation
 
 class BinomialTransform(Transformation):
 
-    def __init__(self, struct, k=6):
-        super().__init__(struct)
+    def __init__(self, k=6):
+        super().__init__()
         self.__d = [0]
         self.__k = k
 

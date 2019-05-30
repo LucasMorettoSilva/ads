@@ -3,8 +3,8 @@ from src.abc.decomposable.transformation import Transformation
 
 class BinaryTransform(Transformation):
 
-    def __init__(self, struct):
-        super().__init__(struct)
+    def __init__(self):
+        super().__init__()
         self.__high = 0
 
     def insert(self, x):
@@ -24,6 +24,6 @@ class BinaryTransform(Transformation):
             self._p[i] = None
             i += 1
         self._p[i] = self._struct(s)
-        if i  == self.__high:
+        if i == self.__high:
             self.__high += 1
             self._p.append(None)

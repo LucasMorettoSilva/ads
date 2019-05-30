@@ -1,12 +1,12 @@
-from functools                   import cmp_to_key
-from statistics                  import median
+from functools                            import cmp_to_key
+from statistics                           import median
 
-from src.abc.static              import Static
+from src.abc.decomposable.decomposable_sp import DecomposableSP
 
-from src.geometric.prim.interval import Interval
+from src.geometric.prim.interval          import Interval
 
 
-class IntervalTree(Static):
+class IntervalTree(DecomposableSP):
 
     class __Node:
 
@@ -102,3 +102,10 @@ class IntervalTree(Static):
                 else:
                     break
             self.__query(v.right, point, res)
+
+    @classmethod
+    def operator(cls, a, b):
+        if a is None or b is None:
+            raise ValueError("Invalid argument of None Type")
+        a.update(b)
+        return a

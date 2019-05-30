@@ -6,8 +6,8 @@ from src.geometric.ds.interval_tree          import IntervalTree
 
 class DynamicIntervalTree(StaticToDynamic):
 
-    def __init__(self, t=BinaryTransform, k=None):
-        if k is not None:
-            super().__init__(IntervalTree, t, k)
+    def __init__(self, t=None):
+        if t is None:
+            super().__init__(BinaryTransform(), IntervalTree)
         else:
-            super().__init__(IntervalTree, t)
+            super().__init__(t, IntervalTree)

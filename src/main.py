@@ -11,7 +11,7 @@ from src.geometric.ds.dynamic_interval_tree  import DynamicIntervalTree
 
 def main():
     a = DynamicIntervalTree()
-    b = DynamicIntervalTree(BinomialTransform, 6)
+    b = DynamicIntervalTree(BinomialTransform(3))
 
     binomial = list()
     binary   = list()
@@ -29,11 +29,15 @@ def main():
         binomial.append(end - start)
 
     plt.subplot(2, 1, 1)
+    plt.yscale("log")
+    plt.xscale("log")
     plt.title("Insertion Time")
     plt.plot(binary,   color="blue")
     plt.plot(binomial, color="red")
 
     plt.subplot(2, 1, 2)
+    plt.yscale("log")
+    plt.xscale("log")
     binomial = list()
     binary   = list()
     for i in range(200):
