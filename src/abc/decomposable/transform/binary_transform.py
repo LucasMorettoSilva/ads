@@ -23,7 +23,7 @@ class BinaryTransform(Transformation):
             s.update(self._p[i].unbuild())
             self._p[i] = None
             i += 1
-        self._p[i] = self._struct(s)
+        self._p[i] = self._static(s)
         if i == self.__high:
             self.__high += 1
             self._p.append(None)

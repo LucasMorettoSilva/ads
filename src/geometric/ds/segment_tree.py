@@ -24,7 +24,6 @@ class SegmentTree(DecomposableSP):
         elif len(self.__segments) == 1:
             i = self.__segments.pop()
             self.__root = self.__Node(i)
-            self.__root.segments.add(i)
             self.__segments.add(i)
         else:
             endpoints = set()
@@ -33,8 +32,9 @@ class SegmentTree(DecomposableSP):
                 endpoints.add(i.max)
 
             self.__root = self.__build(sorted(endpoints), 0, len(endpoints) - 1)
-            for i in segments:
-                self.__put_interval(self.__root, i)
+
+        for i in segments:
+            self.__put_interval(self.__root, i)
 
     def __len__(self):
         return len(self.__segments)

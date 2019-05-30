@@ -40,4 +40,4 @@ class BinomialTransform(Transformation):
 
         if self._p[i] is not None:
             s.update(self._p[i].unbuild())
-        self._p[i] = self._struct(s)
+        self._p[i] = self._static(s)

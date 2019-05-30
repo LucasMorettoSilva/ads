@@ -8,7 +8,7 @@ class Transformation(abc.ABC):
     def __init__(self):
         self._p          = [None]
         self._insertions = set()
-        self._struct     = None
+        self._static     = None
 
     def __len__(self):
         return len(self._insertions)
@@ -16,7 +16,7 @@ class Transformation(abc.ABC):
     def init(self, static):
         if type(static) != type(DecomposableSP):
             raise ValueError("Structure is not Static")
-        self._struct = static
+        self._static = static
 
     @abc.abstractmethod
     def insert(self, x):
@@ -30,7 +30,7 @@ class Transformation(abc.ABC):
         res = set()
         for p in self._p:
             if p is not None:
-                res = self._struct.operator(res, p.query(x))
+                res = self._static.operator(res, p.query(x))
         return res
 
     def all(self):
