@@ -35,6 +35,7 @@ class SplayTree:
         cur = self.__root
         while cur.right is not None:
             cur = cur.right
+        self.__root = self.__splay(self.__root, cur.key)
         return cur.key
 
     def min(self):
@@ -43,6 +44,7 @@ class SplayTree:
         cur = self.__root
         while cur.left is not None:
             cur = cur.left
+        self.__root = self.__splay(self.__root, cur.key)
         return cur.key
 
     def empty(self):
