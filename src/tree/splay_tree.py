@@ -29,6 +29,25 @@ class SplayTree:
     def __contains__(self, key):
         return self.get(key) is not None
 
+    def max(self):
+        if self.empty():
+            return None
+        cur = self.__root
+        while cur.right is not None:
+            cur = cur.right
+        return cur.key
+
+    def min(self):
+        if self.empty():
+            return None
+        cur = self.__root
+        while cur.left is not None:
+            cur = cur.left
+        return cur.key
+
+    def empty(self):
+        return self.__root is None
+
     def get(self, key):
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
@@ -160,12 +179,6 @@ class SplayTree:
         self.__update_fields(x)
         self.__update_fields(y)
 
-        # x.size = 1 + self.__size(x.left) + self.__size(x.right)
-        # y.size = 1 + self.__size(y.left) + self.__size(y.right)
-        #
-        # x.height = max(self.__height(x.left), self.__height(x.right))
-        # y.height = max(self.__height(y.left), self.__height(y.right))
-
         return y
 
     def __rotate_right(self, x):
@@ -175,12 +188,6 @@ class SplayTree:
 
         self.__update_fields(x)
         self.__update_fields(y)
-
-        # x.size = 1 + self.__size(x.left) + self.__size(x.right)
-        # y.size = 1 + self.__size(y.left) + self.__size(y.right)
-        #
-        # x.height = max(self.__height(x.left), self.__height(x.right))
-        # y.height = max(self.__height(y.left), self.__height(y.right))
 
         return y
 
