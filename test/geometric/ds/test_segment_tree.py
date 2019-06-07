@@ -6,7 +6,7 @@ from src.geometric.ds.segment_tree  import SegmentTree
 from src.geometric.prim.interval    import Interval
 
 
-class TestSegmentTreeTree(unittest.TestCase):
+class TestSegmentTree(unittest.TestCase):
 
     def test_constructor_withNoneTypeArgument_shouldRaiseValueError(self):
         with self.assertRaises(ValueError):
