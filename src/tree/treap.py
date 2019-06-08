@@ -59,7 +59,10 @@ class Treap:
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
 
-        return self.__get(self.__root, key).value
+        x = self.__get(self.__root, key)
+        if x is None:
+            return None
+        return x.value
 
     def __get(self, x, key):
         if x is None:
@@ -81,6 +84,7 @@ class Treap:
 
         if value is None:
             self.delete(key)
+            return
 
         self.__root = self.__put(self.__root, key, value)
 
@@ -238,16 +242,15 @@ class Treap:
     @staticmethod
     def __prioritiy(x):
         if x is None:
-            return float("-inf")
+            return -1
         return x.p
 
     def __balance(self, x):
         if self.__prioritiy(x) < self.__prioritiy(x.left) or \
            self.__prioritiy(x) < self.__prioritiy(x.right):
             if self.__prioritiy(x.left) - self.__prioritiy(x.right) > 0:
-                return self.__rotate_left(x)
-            else:
                 return self.__rotate_right(x)
+            return self.__rotate_left(x)
         return x
 
     class __TreapIterator:

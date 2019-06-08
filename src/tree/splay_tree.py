@@ -2,20 +2,19 @@ class SplayTree:
 
     class __Node:
 
-        def __init__(self, key, value, height=0, size=1):
+        def __init__(self, key, value):
             self.key    = key
             self.value  = value
-            self.height = height
-            self.size   = size
             self.left   = None
             self.right  = None
 
     def __init__(self, cmp=None):
         self.__cmp  = cmp
         self.__root = None
+        self.__n    = 0
 
     def __len__(self):
-        return self.__size(self.__root)
+        return self.__n
 
     def __getitem__(self, key):
         return self.get(key)
@@ -28,6 +27,12 @@ class SplayTree:
 
     def __contains__(self, key):
         return self.get(key) is not None
+
+    def __str__(self):
+        return str(self.keys_in_order())
+
+    def __repr__(self):
+        return str(self.keys_in_order())
 
     def max(self):
         if self.empty():
@@ -54,6 +59,9 @@ class SplayTree:
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
 
+        if self.empty():
+            return None
+
         self.__root = self.__splay(self.__root, key)
         cmp = self.__compare(key, self.__root.key)
         if cmp == 0:
@@ -69,9 +77,11 @@ class SplayTree:
 
         if value is None:
             self.delete(key)
+            return
 
         if self.__root is None:
             self.__root = self.__Node(key, value)
+            self.__n += 1
             return
 
         self.__root = self.__splay(self.__root, key)
@@ -84,18 +94,14 @@ class SplayTree:
             x.right = self.__root
             self.__root.left = None
             self.__root = x
-
-            self.__update_fields(self.__root.right)
-            self.__update_fields(self.__root)
+            self.__n += 1
         elif cmp > 0:
             x       = self.__Node(key, value)
             x.right = self.__root.right
             x.left  = self.__root
             self.__root.right = None
             self.__root = x
-
-            self.__update_fields(self.__root.left)
-            self.__update_fields(self.__root)
+            self.__n += 1
         else:
             self.__root.value = value
 
@@ -110,6 +116,7 @@ class SplayTree:
 
         cmp = self.__compare(key, self.__root.key)
         if cmp == 0:
+            self.__n -= 1
             if self.__root.left is None:
                 self.__root = self.__root.right
             else:
@@ -119,8 +126,31 @@ class SplayTree:
 
                 x = self.__root.right
                 self.__root = self.__root.left
-                self.__splay(self.__root, key)
+                self.__root = self.__splay(self.__root, key)
                 self.__root.right = x
+
+    def delete_max(self):
+        if self.empty():
+            return
+        self.delete(self.max())
+
+    def delete_min(self):
+        if self.empty():
+            return
+        self.delete(self.min())
+
+    def keys_in_order(self):
+        keys  = list()
+        stack = list()
+        cur   = self.__root
+        while cur is not None or len(stack) > 0:
+            while cur is not None:
+                stack.append(cur)
+                cur = cur.left
+            cur = stack.pop()
+            keys.append(cur.key)
+            cur = cur.right
+        return keys
 
     def __splay(self, x, key):
         if x is None:
@@ -173,24 +203,18 @@ class SplayTree:
             return 1
         return 0
 
-    def __rotate_left(self, x):
+    @staticmethod
+    def __rotate_left(x):
         y       = x.right
         x.right = y.left
         y.left  = x
-
-        self.__update_fields(x)
-        self.__update_fields(y)
-
         return y
 
-    def __rotate_right(self, x):
+    @staticmethod
+    def __rotate_right(x):
         y       = x.left
         x.left  = y.right
         y.right = x
-
-        self.__update_fields(x)
-        self.__update_fields(y)
-
         return y
 
     def __update_fields(self, x):
