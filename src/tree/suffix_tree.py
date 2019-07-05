@@ -1,3 +1,6 @@
+from src.tree.avl_tree import AVLTree
+
+
 class SuffixTree:
 
     class __Node:
@@ -7,7 +10,7 @@ class SuffixTree:
             self.r    = r
             self.p    = p
             self.suf  = None
-            self.f    = dict()
+            self.f    = AVLTree(self.__compare)
             self.size = 0
 
         def __len__(self):
@@ -16,11 +19,26 @@ class SuffixTree:
         def __repr__(self):
             return "[{}, {}]".format(self.l, self.r)
 
+        @staticmethod
+        def __compare(a, b):
+            if a == "$" and b != "$":
+                return -1
+            if b == "$" and a != "$":
+                return 1
+            if a < b:
+                return -1
+            if a > b:
+                return 1
+            return 0
+
     def __init__(self, p):
         self.__p = p + "$"
         self.__r = self.__Node(1, 0, None)
         self.__build()
         self.__update_fields(self.__r)
+
+    def root(self):
+        return self.__r
 
     def __s(self, x, i):
         return self.__p[x.l + i]
@@ -74,7 +92,7 @@ class SuffixTree:
     def __update_fields(self, x):
         if len(x.f) == 0:
             x.size = 1
-        for c in x.f.keys():
+        for c in x.f.keys_in_order():
             x.size += self.__update_fields(x.f[c])
         return x.size
 
