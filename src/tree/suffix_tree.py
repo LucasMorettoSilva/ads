@@ -3,11 +3,12 @@ class SuffixTree:
     class __Node:
 
         def __init__(self, l, r, p):
-            self.l   = l
-            self.r   = r
-            self.p   = p
-            self.suf = None
-            self.f   = dict()
+            self.l    = l
+            self.r    = r
+            self.p    = p
+            self.suf  = None
+            self.f    = dict()
+            self.size = 0
 
         def __len__(self):
             return self.r - self.l + 1
@@ -19,6 +20,7 @@ class SuffixTree:
         self.__p = p + "$"
         self.__r = self.__Node(1, 0, None)
         self.__build()
+        self.__update_fields(self.__r)
 
     def __s(self, x, i):
         return self.__p[x.l + i]
@@ -69,24 +71,42 @@ class SuffixTree:
                         cd = j - g
                 i += 1
 
+    def __update_fields(self, x):
+        if len(x.f) == 0:
+            x.size = 1
+        for c in x.f.keys():
+            x.size += self.__update_fields(x.f[c])
+        return x.size
+
     def check_pattern(self, s):
+        return self.__find_match(s) is not None
+
+    def find_match(self, s):
+        match = self.__find_match(s)
+        if s is None:
+            return None
+        return self.__p[match.l:match.r]
+
+    def __find_match(self, s):
         cur = self.__r
         i = 0
         while i < len(s):
             if s[i] not in cur.f:
-                return False
+                return None
 
             cur = cur.f[s[i]]
-            for c2 in self.__p[cur.l:cur.r]:
-                if i >= len(s) or c2 == "$":
-                    break
-                if s[i] != c2:
-                    return False
+            for c in self.__p[cur.l:cur.r]:
+                if i >= len(s):
+                    return cur
+                if c == "$":
+                    return None
+                if s[i] != c:
+                    return None
                 i += 1
-        return True
+        return cur
 
-
-
-
-
-
+    def cont_occurrences(self, s):
+        x = self.__find_match(s)
+        if x is None:
+            return 0
+        return x.size
