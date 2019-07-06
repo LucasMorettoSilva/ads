@@ -32,9 +32,8 @@ class SuffixTree:
             return 0
 
     def __init__(self, p):
-        self.__p = p + "$"
-        self.__r = self.__Node(1, 0, None)
-        self.__build()
+        self.__p = p
+        self.__r = self.__build_quad(p)
         self.__update_fields(self.__r)
 
     def root(self):
@@ -43,22 +42,48 @@ class SuffixTree:
     def __s(self, x, i):
         return self.__p[x.l + i]
 
-    def __build(self):
+    def __build_quad(self, p):
+        r = self.__Node(1, 0, None)
+        p += "$"
+        for i in range(len(p)):
+            cn = r
+            cd = 0
+            for j in range(i, len(p)):
+                if cd == len(cn) and p[j] not in cn.f:
+                    cn.f[p[j]] = self.__Node(j, len(p), cn)
+                    break
+                if cd < len(cn) and self.__s(cn, cd) != p[j]:
+                    mid = self.__Node(cn.l, cn.l + cd, cn.p)
+                    cn.p.f[self.__s(mid, 0)] = mid
+                    mid.f[self.__s(cn, cd)] = cn
+                    cn.p = mid
+                    cn.l += cd
+                    mid.f[p[j]] = self.__Node(j, len(p), mid)
+                    break
+                if cd == len(cn):
+                    cn = cn.f[p[j]]
+                    cd = 0
+                cd += 1
+        return r
+
+    def __build(self, p):
         i = 0
-        cn = self.__r
+        r = self.__Node(1, 0, None)
+        p += "$"
+        cn = r
         cd = 0
         ns = None
-        for j in range(0, len(self.__p)):
+        for j in range(0, len(p)):
             while i <= j:
-                if cd == len(cn) and self.__p[j] in cn.f:
-                    cn = cn.f[self.__p[j]]
+                if cd == len(cn) and p[j] in cn.f:
+                    cn = cn.f[p[j]]
                     cd = 0
-                if cd < len(cn) and self.__s(cn, cd) == self.__p[j]:
+                if cd < len(cn) and self.__s(cn, cd) == p[j]:
                     cd += 1
                     break
                 if cd == len(cn):
-                    cn.f[self.__p[j]] = self.__Node(j, len(self.__p), cn)
-                    if cn is not self.__r:
+                    cn.f[p[j]] = self.__Node(j, len(p), cn)
+                    if cn is not r:
                         cn = cn.suf
                         cd = len(cn)
                 else:
@@ -67,17 +92,17 @@ class SuffixTree:
                     mid.f[self.__s(cn, cd)] = cn
                     cn.p = mid
                     cn.l += cd
-                    mid.f[self.__p[j]] = self.__Node(j, len(self.__p), mid)
+                    mid.f[p[j]] = self.__Node(j, len(p), mid)
                     if ns is not None:
                         ns.suf = mid
                     cn = mid.p
-                    if cn is not self.__r:
+                    if cn is not r:
                         cn = cn.suf
                         g  = j - cd
                     else:
                         g = i + 1
-                    while g < j and g + len(cn.f[self.__p[g]]) <= j:
-                        cn = cn.f[self.__p[g]]
+                    while g < j and g + len(cn.f[p[g]]) <= j:
+                        cn = cn.f[p[g]]
                         g  += len(cn)
                     if g == j:
                         ns = None
@@ -85,9 +110,10 @@ class SuffixTree:
                         cd = len(cn)
                     else:
                         ns = mid
-                        cn = cn.f[self.__p[g]]
+                        cn = cn.f[p[g]]
                         cd = j - g
                 i += 1
+        return r
 
     def __update_fields(self, x):
         if len(x.f) == 0:

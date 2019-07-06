@@ -1,5 +1,17 @@
 class AVLTree:
 
+    class __AVLTreeIterator:
+
+        def __init__(self, keys):
+            self.__keys = keys
+            self.__i    = -1
+
+        def __next__(self):
+            self.__i += 1
+            if self.__i >= len(self.__keys):
+                raise StopIteration
+            return self.__keys[self.__i]
+
     class __Node:
 
         def __init__(self, key=None, val=None, height=0, size=0):
@@ -26,6 +38,9 @@ class AVLTree:
 
     def __len__(self):
         return self.size()
+
+    def __iter__(self):
+        return self.__AVLTreeIterator(self.keys_in_order())
 
     def __compare(self, a, b):
         if self.__cmp is not None:
