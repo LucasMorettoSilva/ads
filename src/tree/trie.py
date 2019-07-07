@@ -70,13 +70,69 @@ class Trie:
                 k -= 1
         return array
 
-    def __lcp(self, a, b, w):
+    def __lcp(self, i, j, v, w):
         k = 0
-        while a + k < len(self.__txt) and \
-              b + k < len(w)          and \
-              self.__txt[a + k] == w[b + k]:
+        while i + k < len(v) and \
+              j + k < len(w)          and \
+              v[i + k] == w[j + k]:
             k += 1
+
+        # cmp = 0
+        # if w[b + k] < self.__txt[a + k]:
+        #     cmp = -1
+        # elif w[b + k] > self.__txt[a + k]:
+        #     cmp = 1
+        # else:
+        #     cmp = 0
         return k
+
+    def find_match(self, w):
+        a = self.__txt
+        pos = self.suffix_array()
+        n = len(pos)
+        p = len(w)
+
+        L = 0
+        R = n - 1
+        l = self.__lcp(0, 0, a[pos[L:]], w)
+        r = self.__lcp(0, 0, a[pos[R:]], w)
+        while R - L > 1:
+            M = (L + R) // 2
+            m = a[pos[M:]]
+            if l == r:
+                j = self.__lcp(l + 1, l + 1, m, w)
+                if l + j + 1 >= p or l + 1 + j >= len(m):
+                    return M
+                if w[l + 1 + j] < m[l + 1 + j]:
+                    R = M
+                    r = j - 1
+                else:
+                    L = M
+                    l = j - 1
+            elif l > r:
+                lm = self.__lcp(0, 0, a[pos[L:]], a[pos[M:]])
+                if lm < l:
+                    R = M
+                elif lm > l:
+                    L = M
+
+            if l >= r:
+                if self.__lcp(pos[L], pos[M], a) >= l:
+                    m = l + self.__lcp(pos[M] + l, l, w)
+                else:
+                    m = self.__lcp(pos[L], pos[M], a)
+            else:
+                if self.__lcp(pos[M], pos[R], a) >= r:
+                    m = r + self.__lcp(pos[M] + r, r, w)
+                else:
+                    m = self.__lcp(pos[M], pos[R], a)
+            if m == p or w[m] <= a[pos[M] + m]:
+                R, r = M, m
+            else:
+                L, l = M, m
+        lw = R
+        return lw
+
 
     def match(self, w):
         a   = self.__txt
@@ -86,30 +142,30 @@ class Trie:
         l   = self.__lcp(pos[0], 0, w)
         r   = self.__lcp(pos[n - 1], 0, w)
 
-        if l == p or w[l] <= a[pos[0] + l]:
-            lw = 0
-        elif r < p or w[r] <= a[pos[n - 1] + r]:
-            lw = n
-        else:
-            L = 0
-            R = n - 1
-            while R - L > 1:
-                M = (L + R) // 2
-                if l >= r:
-                    if self.__lcp(pos[L], pos[M], a) >= l:
-                        m = l + self.__lcp(pos[M] + l, l, w)
-                    else:
-                        m = self.__lcp(pos[L], pos[M], a)
+        # if l == p or w[l] <= a[pos[0] + l]:
+        #     lw = 0
+        # elif r < p or w[r] <= a[pos[n - 1] + r]:
+        #     lw = n
+        # else:
+        L = 0
+        R = n - 1
+        while R - L > 1:
+            M = (L + R) // 2
+            if l >= r:
+                if self.__lcp(pos[L], pos[M], a) >= l:
+                    m = l + self.__lcp(pos[M] + l, l, w)
                 else:
-                    if self.__lcp(pos[M], pos[R], a) >= r:
-                        m = r + self.__lcp(pos[M] + r, r, w)
-                    else:
-                        m = self.__lcp(pos[M], pos[R], a)
-                if m == p or w[m] <= a[pos[M] + m]:
-                    R, r = M, m
+                    m = self.__lcp(pos[L], pos[M], a)
+            else:
+                if self.__lcp(pos[M], pos[R], a) >= r:
+                    m = r + self.__lcp(pos[M] + r, r, w)
                 else:
-                    L, l = M, m
-            lw = R
+                    m = self.__lcp(pos[M], pos[R], a)
+            if m == p or w[m] <= a[pos[M] + m]:
+                R, r = M, m
+            else:
+                L, l = M, m
+        lw = R
         return lw
 
     def __find_string(self, node, suffix, array):

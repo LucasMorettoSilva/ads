@@ -152,6 +152,24 @@ class SplayTree:
             cur = cur.right
         return keys
 
+    def keys_level_order(self):
+        if self.__root is None:
+            return []
+
+        keys  = list()
+        queue = list()
+        queue.append(self.__root)
+        while len(queue) > 0:
+            node = queue.pop(0)
+            keys.append(node.key)
+
+            if node.left:
+                queue.append(node.left)
+
+            if node.right:
+                queue.append(node.right)
+        return keys
+
     def __splay(self, x, key):
         if x is None:
             return None

@@ -13,7 +13,7 @@ class TestSuffixArray(unittest.TestCase):
 
         trie = Trie("banana")
         print(trie.suffix_array())
-        print(trie.match("ban"))
+        print(trie.match("e"))
         # print(trie.lcp_array())
 
         # trie = Trie("lucas moretto da silva")
