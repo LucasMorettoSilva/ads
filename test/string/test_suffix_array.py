@@ -11,9 +11,9 @@ class TestSuffixArray(unittest.TestCase):
         # array = SuffixArray("mississssipi")
         # print(array)
 
-        trie = Trie("banana")
-        print(trie.suffix_array())
-        print(trie.match("e"))
+        trie = Trie("mississipi")
+        print(trie.suffix_array)
+        print(trie.find_match("mississipi"))
         # print(trie.lcp_array())
 
         # trie = Trie("lucas moretto da silva")

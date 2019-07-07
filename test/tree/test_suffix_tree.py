@@ -18,13 +18,14 @@ class TestSuffixTree(unittest.TestCase):
             self.assertIn(pattern[i:], trie)
 
     def test_checkPattern_withPatternNotInTree_shouldReturnFalse(self):
-        tree = SuffixTree("banana")
-        self.assertFalse(tree.check_pattern("e"))
-        self.assertFalse(tree.check_pattern("nanan"))
-
-        trie = Trie("banana")
-        self.assertNotIn("e", trie)
-        self.assertNotIn("nanan", trie)
+        tree = SuffixTree("abracadabra")
+        tree.print()
+        # self.assertFalse(tree.check_pattern("e"))
+        # self.assertFalse(tree.check_pattern("nanan"))
+        #
+        # trie = Trie("banana")
+        # self.assertNotIn("e", trie)
+        # self.assertNotIn("nanan", trie)
 
     def test_countOccurrences_withPatternInTree_shouldReturnNumberOfTimesPatternAppears(self):
         trie = Trie("banana")

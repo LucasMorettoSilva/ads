@@ -35,6 +35,7 @@ class SuffixTree:
         self.__p = p
         self.__r = self.__build_quad(p)
         self.__update_fields(self.__r)
+        self.__p += "$"
 
     def root(self):
         return self.__r
@@ -154,3 +155,24 @@ class SuffixTree:
         if x is None:
             return 0
         return x.size
+
+    def print(self):
+        self.__print(self.__r)
+
+    def __print(self, x):
+        if x is self.__r:
+            print("root")
+        else:
+            print(self.__p[x.l:x.r+1])
+
+        children = []
+        for c in x.f:
+            if c == "$":
+                children.append("$")
+            else:
+                children.append(self.__p[x.f[c].l:x.f[c].r+1])
+        print(str(children) + "\n")
+
+        for c in x.f:
+            if c != "$":
+                self.__print(x.f[c])
