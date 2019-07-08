@@ -115,6 +115,11 @@ class Trie:
         l   = self.__lcp(0, 0, w, a[pos[0]:])
         r   = self.__lcp(0, 0, w, a[pos[-1]:])
 
+        if l >= len(w):
+            return a[pos[0]:]
+        if r >= len(w):
+            return a[pos[-1]:]
+
         L = 0
         R = len(pos) - 1
         while R - L > 1:
@@ -136,8 +141,7 @@ class Trie:
             else:
                 L, l = M, m
 
-        k = self.__lcp(0, 0, a[pos[R]:], w)
-        if k < len(w):
+        if self.__lcp(0, 0, a[pos[R]:], w) < len(w):
             return -1
         return a[pos[R]:]
 

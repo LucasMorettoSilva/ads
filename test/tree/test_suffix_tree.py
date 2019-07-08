@@ -23,8 +23,8 @@ class TestSuffixTree(unittest.TestCase):
         # self.assertFalse(tree.check_pattern("e"))
         # self.assertFalse(tree.check_pattern("nanan"))
         #
-        trie = Trie("banana")
-        print("match " + str(trie.match("m")))
+        trie = Trie("mississipi")
+        print("match " + str(trie.match("ssissipi")))
         # print("find match " + str(trie.find_match("n")))
         self.assertNotIn("e", trie)
         self.assertNotIn("nanan", trie)
