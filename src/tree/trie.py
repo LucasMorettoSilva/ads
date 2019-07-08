@@ -106,100 +106,38 @@ class Trie:
         precomputeLcpsHelper(0, len(lcp1))
         return llcp, rlcp
 
-    def find_match(self, w):
+    def match(self, w):
         a   = self.__txt
         pos = self.suffix_array
 
-        n = len(pos)
-        p = len(w)
+        l   = self.__lcp(0, 0, w, a[pos[0]:])
+        r   = self.__lcp(0, 0, w, a[pos[-1]:])
 
         L = 0
-        R = n - 1
-        l = self.__lcp(0, 0, a[pos[L]:], w)
-        r = self.__lcp(0, 0, a[pos[R]:], w)
+        R = len(pos) - 1
         while R - L > 1:
             M = (L + R) // 2
-            m = a[pos[M]:]
-            if l == r:
-                j = self.__lcp(l, l, m, w)
-                if l + j >= p:
-                    return a[pos[M]:]
-                if l + j < len(m) and w[l + j] < m[l + j]:
-                    R = M
-                    r = j
+            if l >= r:
+                if self.__llcp[M] >= l:
+                    m = l + self.__lcp(l + 1, l + 1, a[pos[M]:], w)
                 else:
-                    L = M
-                    l = j
-            elif l > r:
-                lm = self.__llcp[M]
-                if lm < l:
-                    R = M
-                elif lm > l:
-                    L = M
-                else:
-                    j = self.__lcp(l, l, m, w)
-                    if l + j >= p:
-                        return a[pos[M]:]
-                    if l + j < len(m) and w[l + j] < m[l + j]:
-                        R = M
-                        r = j
-                    else:
-                        L = M
-                        l = j
+                    m = self.__llcp[M]
             else:
-                rm = self.__rlcp[M]
-                if rm < r:
-                    L = M
-                elif rm > r:
-                    R = M
+                if self.__rlcp[M] >= r:
+                    m = r + self.__lcp(r + 1, r + 1, a[pos[M]:], w)
                 else:
-                    j = self.__lcp(r, r, m, w)
-                    if r + j >= p:
-                        return a[pos[M]:]
-                    if r + j < len(m) and w[r + j] < m[r + j]:
-                        R = M
-                        r = j
-                    else:
-                        L = M
-                        l = j
+                    m = self.__rlcp[M]
+            if m >= len(w):
+                return a[pos[M]:]
+            if m < len(a[pos[M]:]) and w[m] <= a[pos[M] + m]:
+                R, r = M, m
+            else:
+                L, l = M, m
+
         k = self.__lcp(0, 0, a[pos[R]:], w)
         if k < len(w):
             return -1
         return a[pos[R]:]
-
-    # def match(self, w):
-    #     a   = self.__txt
-    #     pos = self.suffix_array()
-    #     p   = len(w)
-    #     n   = len(pos)
-    #     l   = self.__lcp(pos[0], 0, w)
-    #     r   = self.__lcp(pos[n - 1], 0, w)
-    #
-    #     # if l == p or w[l] <= a[pos[0] + l]:
-    #     #     lw = 0
-    #     # elif r < p or w[r] <= a[pos[n - 1] + r]:
-    #     #     lw = n
-    #     # else:
-    #     L = 0
-    #     R = n - 1
-    #     while R - L > 1:
-    #         M = (L + R) // 2
-    #         if l >= r:
-    #             if self.__lcp(pos[L], pos[M], a) >= l:
-    #                 m = l + self.__lcp(pos[M] + l, l, w)
-    #             else:
-    #                 m = self.__lcp(pos[L], pos[M], a)
-    #         else:
-    #             if self.__lcp(pos[M], pos[R], a) >= r:
-    #                 m = r + self.__lcp(pos[M] + r, r, w)
-    #             else:
-    #                 m = self.__lcp(pos[M], pos[R], a)
-    #         if m == p or w[m] <= a[pos[M] + m]:
-    #             R, r = M, m
-    #         else:
-    #             L, l = M, m
-    #     lw = R
-    #     return lw
 
     def __find_index(self, node, array):
         if node.end:
