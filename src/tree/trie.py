@@ -29,7 +29,7 @@ class Trie:
 
         self.__sa   = self.__build_suffix_array()
         self.__lcp1 = self.__build_lcp()
-        self.__llcp, self.__rlcp = self.__lcp_lr(self.__lcp1)
+        self.__llcp, self.__rlcp = self.__build_lcp_lr(self.__lcp1)
 
     def __contains__(self, pattern):
         x = self.__get_end_node(pattern)
@@ -92,18 +92,20 @@ class Trie:
         return k
 
     @staticmethod
-    def __lcp_lr(lcp1):
-        llcp, rlcp = [None] * len(lcp1), [None] * len(lcp1)
+    def __build_lcp_lr(lcp1):
+        llcp  = [0] * len(lcp1)
+        rlcp  = [0] * len(lcp1)
         lcp1 += [0]
 
-        def precomputeLcpsHelper(l, r):
-            if l == r - 1:    return lcp1[l]
+        def compute_lr(l, r):
+            if l == r - 1:
+                return lcp1[l]
             c = (l + r) // 2
-            llcp[c - 1] = precomputeLcpsHelper(l, c)
-            rlcp[c - 1] = precomputeLcpsHelper(c, r)
+            llcp[c - 1] = compute_lr(l, c)
+            rlcp[c - 1] = compute_lr(c, r)
             return min(llcp[c - 1], rlcp[c - 1])
 
-        precomputeLcpsHelper(0, len(lcp1))
+        compute_lr(0, len(lcp1))
         return llcp, rlcp
 
     def match(self, w):
