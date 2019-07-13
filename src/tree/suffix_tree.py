@@ -33,9 +33,27 @@ class SuffixTree:
 
     def __init__(self, p):
         self.__p = p
-        self.__r = self.__build_quad(p)
+        self.__r = self.__build(p)
         self.__update_fields(self.__r)
         self.__p += "$"
+
+    def suffix_array(self):
+        array = list()
+        cur   = self.__r
+        for key in cur.f:
+            self.__dfs(cur.f[key], "", array)
+        return array
+
+    def __dfs(self, node, suf, array):
+        if node.l == node.r:
+            suf += self.__p[node.l:node.r + 1]
+        else:
+            suf += self.__p[node.l:node.r]
+        if len(node.f) == 0:
+            array.append(suf)
+        else:
+            for key in node.f:
+                self.__dfs(node.f[key], suf, array)
 
     def root(self):
         return self.__r
@@ -140,11 +158,11 @@ class SuffixTree:
                 return None
 
             cur = cur.f[s[i]]
-            for c in self.__p[cur.l:cur.r]:
+            for c in self.__p[cur.l:cur.r+1]:
                 if i >= len(s):
                     return cur
                 if c == "$":
-                    return None
+                    break
                 if s[i] != c:
                     return None
                 i += 1
@@ -163,7 +181,10 @@ class SuffixTree:
         if x is self.__r:
             print("root")
         else:
-            print(self.__p[x.l:x.r+1])
+            res = ""
+            for i in range(x.l, x.r + 1):
+                res += self.__p[i]
+            print(res)
 
         children = []
         for c in x.f:

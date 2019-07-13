@@ -9,9 +9,10 @@ class SplayTree:
             self.right  = None
 
     def __init__(self, cmp=None):
-        self.__cmp  = cmp
-        self.__root = None
-        self.__n    = 0
+        self.__cmp   = cmp
+        self.__root  = None
+        self.__n     = 0
+        self.__count = 0
 
     def __len__(self):
         return self.__n
@@ -34,21 +35,31 @@ class SplayTree:
     def __repr__(self):
         return str(self.keys_in_order())
 
+    @property
+    def counter(self):
+        return self.__count
+
     def max(self):
+        self.__count = 0
+
         if self.empty():
             return None
         cur = self.__root
         while cur.right is not None:
             cur = cur.right
+            self.__count += 1
         self.__root = self.__splay(self.__root, cur.key)
         return cur.key
 
     def min(self):
+        self.__count = 0
+
         if self.empty():
             return None
         cur = self.__root
         while cur.left is not None:
             cur = cur.left
+            self.__count += 1
         self.__root = self.__splay(self.__root, cur.key)
         return cur.key
 
@@ -59,6 +70,7 @@ class SplayTree:
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
 
+        self.__count = 0
         if self.empty():
             return None
 
@@ -74,6 +86,8 @@ class SplayTree:
     def put(self, key, value):
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
+
+        self.__count = 0
 
         if value is None:
             self.delete(key)
@@ -109,6 +123,8 @@ class SplayTree:
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
 
+        self.__count = 0
+
         if self.__root is None:
             return
 
@@ -120,9 +136,6 @@ class SplayTree:
             if self.__root.left is None:
                 self.__root = self.__root.right
             else:
-                # We have key == root.key, so after splay(root.left, key),
-                # the tree we get will have no right child and the max
-                # node in the left subtree will get splayed
 
                 x = self.__root.right
                 self.__root = self.__root.left
@@ -130,11 +143,15 @@ class SplayTree:
                 self.__root.right = x
 
     def delete_max(self):
+        self.__count = 0
+
         if self.empty():
             return
         self.delete(self.max())
 
     def delete_min(self):
+        self.__count = 0
+
         if self.empty():
             return
         self.delete(self.min())
@@ -174,11 +191,15 @@ class SplayTree:
         if x is None:
             return None
 
+        self.__count += 1
+
         cmp_gf = self.__compare(key, x.key)
 
         if cmp_gf < 0:
             if x.left is None:
                 return x
+
+            self.__count += 1
 
             cmp_f = self.__compare(key, x.left.key)
             if cmp_f < 0:
@@ -196,6 +217,8 @@ class SplayTree:
         if cmp_gf > 0:
             if x.right is None:
                 return x
+
+            self.__count += 1
 
             cmp_f = self.__compare(key, x.right.key)
             if cmp_f < 0:

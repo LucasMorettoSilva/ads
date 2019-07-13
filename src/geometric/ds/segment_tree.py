@@ -15,7 +15,7 @@ class SegmentTree(DecomposableSP):
 
     def __init__(self, segments):
         if segments is None:
-            raise ValueError("Invalid argument 'intervals' of None Type")
+            raise ValueError("Invalid argument 'segments' of None Type")
 
         self.__segments = set(segments)
 

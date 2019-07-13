@@ -194,6 +194,3 @@ class Forest:
             le = cur.greater_p
             cur = cur.parent
         return qt
-
-
-
