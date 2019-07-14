@@ -5,195 +5,170 @@ class SuffixTree:
 
     class __Node:
 
-        def __init__(self, l, r, p):
-            self.l    = l
-            self.r    = r
-            self.p    = p
-            self.suf  = None
-            self.f    = AVLTree(self.__compare)
-            self.size = 0
-
-        def __len__(self):
-            return self.r - self.l + 1
+        def __init__(self, key, val):
+            self.key = key
+            self.val = val
+            self.end = False
+            self.idx = 0
+            self.sub = AVLTree()
 
         def __repr__(self):
-            return "[{}, {}]".format(self.l, self.r)
+            return "[key: '{}', val: '{}', end: '{}']".format(
+                self.key,
+                self.val,
+                self.end
+            )
 
-        @staticmethod
-        def __compare(a, b):
-            if a == "$" and b != "$":
-                return -1
-            if b == "$" and a != "$":
-                return 1
-            if a < b:
-                return -1
-            if a > b:
-                return 1
-            return 0
+    def __init__(self, txt):
+        if txt is None:
+            raise ValueError("Illegal argument 'txt' of None type")
+        self.__txt  = txt
 
-    def __init__(self, p):
-        self.__p = p
-        self.__r = self.__build(p)
-        self.__update_fields(self.__r)
-        self.__p += "$"
+        self.__root = self.__Node("", -1)
+        self.__build()
 
-    def suffix_array(self):
-        array = list()
-        cur   = self.__r
-        for key in cur.f:
-            self.__dfs(cur.f[key], "", array)
-        return array
+        self.__sa   = self.__build_suffix_array()
+        self.__lcp1 = self.__build_lcp()
+        self.__llcp, self.__rlcp = self.__build_lcp_lr(self.__lcp1)
 
-    def __dfs(self, node, suf, array):
-        if node.l == node.r:
-            suf += self.__p[node.l:node.r + 1]
-        else:
-            suf += self.__p[node.l:node.r]
-        if len(node.f) == 0:
-            array.append(suf)
-        else:
-            for key in node.f:
-                self.__dfs(node.f[key], suf, array)
+    def __contains__(self, pattern):
+        x = self.__get_end_node(pattern)
+        if x is None:
+            return False
+        return x.end
 
-    def root(self):
-        return self.__r
+    def __build_lcp(self):
+        n    = len(self.__sa)
+        lcp  = [0] * n
 
-    def __s(self, x, i):
-        return self.__p[x.l + i]
+        rank = [0] * n
+        for i in range(n):
+            rank[self.__sa[i]] = i
 
-    def __build_quad(self, p):
-        r = self.__Node(1, 0, None)
-        p += "$"
-        for i in range(len(p)):
-            cn = r
-            cd = 0
-            for j in range(i, len(p)):
-                if cd == len(cn) and p[j] not in cn.f:
-                    cn.f[p[j]] = self.__Node(j, len(p), cn)
-                    break
-                if cd < len(cn) and self.__s(cn, cd) != p[j]:
-                    mid = self.__Node(cn.l, cn.l + cd, cn.p)
-                    cn.p.f[self.__s(mid, 0)] = mid
-                    mid.f[self.__s(cn, cd)] = cn
-                    cn.p = mid
-                    cn.l += cd
-                    mid.f[p[j]] = self.__Node(j, len(p), mid)
-                    break
-                if cd == len(cn):
-                    cn = cn.f[p[j]]
-                    cd = 0
-                cd += 1
-        return r
+        k = 0
+        for i in range(n):
+            if rank[i] == n - 1:
+                k = 0
+                continue
 
-    def __build(self, p):
-        i = 0
-        r = self.__Node(1, 0, None)
-        p += "$"
-        cn = r
-        cd = 0
-        ns = None
-        for j in range(0, len(p)):
-            while i <= j:
-                if cd == len(cn) and p[j] in cn.f:
-                    cn = cn.f[p[j]]
-                    cd = 0
-                if cd < len(cn) and self.__s(cn, cd) == p[j]:
-                    cd += 1
-                    break
-                if cd == len(cn):
-                    cn.f[p[j]] = self.__Node(j, len(p), cn)
-                    if cn is not r:
-                        cn = cn.suf
-                        cd = len(cn)
-                else:
-                    mid = self.__Node(cn.l, cn.l + cd, cn.p)
-                    cn.p.f[self.__s(mid, 0)] = mid
-                    mid.f[self.__s(cn, cd)] = cn
-                    cn.p = mid
-                    cn.l += cd
-                    mid.f[p[j]] = self.__Node(j, len(p), mid)
-                    if ns is not None:
-                        ns.suf = mid
-                    cn = mid.p
-                    if cn is not r:
-                        cn = cn.suf
-                        g  = j - cd
-                    else:
-                        g = i + 1
-                    while g < j and g + len(cn.f[p[g]]) <= j:
-                        cn = cn.f[p[g]]
-                        g  += len(cn)
-                    if g == j:
-                        ns = None
-                        mid.suf = cn
-                        cd = len(cn)
-                    else:
-                        ns = mid
-                        cn = cn.f[p[g]]
-                        cd = j - g
-                i += 1
-        return r
+            j = self.__sa[rank[i] + 1]
+            while i + k < n and \
+                  j + k < n and \
+                  self.__txt[i + k] == self.__txt[j + k]:
+                k += 1
 
-    def __update_fields(self, x):
-        if len(x.f) == 0:
-            x.size = 1
-        for c in x.f.keys_in_order():
-            x.size += self.__update_fields(x.f[c])
-        return x.size
+            lcp[rank[i]] = k
+            if k > 0:
+                k -= 1
+        return lcp
 
-    def check_pattern(self, s):
-        return self.__find_match(s) is not None
+    def __build_suffix_array(self):
+        suffix = list()
+        for char in self.__root.sub:
+            self.__find_index(self.__root.sub[char], suffix)
+        return suffix
 
-    def find_match(self, s):
-        match = self.__find_match(s)
-        if s is None:
-            return None
-        return self.__p[match.l:match.r]
-
-    def __find_match(self, s):
-        cur = self.__r
-        i = 0
-        while i < len(s):
-            if s[i] not in cur.f:
-                return None
-
-            cur = cur.f[s[i]]
-            for c in self.__p[cur.l:cur.r+1]:
-                if i >= len(s):
-                    return cur
-                if c == "$":
-                    break
-                if s[i] != c:
-                    return None
-                i += 1
-        return cur
-
-    def cont_occurrences(self, s):
-        x = self.__find_match(s)
+    def count(self, pattern):
+        x = self.__get_end_node(pattern)
         if x is None:
             return 0
-        return x.size
+        return x.val
 
-    def print(self):
-        self.__print(self.__r)
+    @property
+    def suffix_array(self):
+        return self.__sa
 
-    def __print(self, x):
-        if x is self.__r:
-            print("root")
-        else:
-            res = ""
-            for i in range(x.l, x.r + 1):
-                res += self.__p[i]
-            print(res)
+    @property
+    def lcp_array(self):
+        return self.__lcp1
 
-        children = []
-        for c in x.f:
-            if c == "$":
-                children.append("$")
+    @staticmethod
+    def __lcp(i, j, v, w):
+        k = 0
+        while i + k < len(v) and \
+                j + k < len(w) and \
+                v[i + k] == w[j + k]:
+            k += 1
+        return k
+
+    @staticmethod
+    def __build_lcp_lr(lcp1):
+        llcp  = [0] * len(lcp1)
+        rlcp  = [0] * len(lcp1)
+        lcp1 += [0]
+
+        def compute_lr(l, r):
+            if l == r - 1:
+                return lcp1[l]
+            c = (l + r) // 2
+            llcp[c - 1] = compute_lr(l, c)
+            rlcp[c - 1] = compute_lr(c, r)
+            return min(llcp[c - 1], rlcp[c - 1])
+
+        compute_lr(0, len(lcp1))
+        return llcp, rlcp
+
+    def match(self, w):
+        a   = self.__txt
+        pos = self.suffix_array
+
+        l   = self.__lcp(0, 0, w, a[pos[0]:])
+        r   = self.__lcp(0, 0, w, a[pos[-1]:])
+
+        if l >= len(w):
+            return a[pos[0]:]
+        if r >= len(w):
+            return a[pos[-1]:]
+
+        L = 0
+        R = len(pos) - 1
+        while R - L > 1:
+            M = (L + R) // 2
+            if l >= r:
+                if self.__llcp[M] >= l:
+                    m = l + self.__lcp(l + 1, l + 1, a[pos[M]:], w)
+                else:
+                    m = self.__llcp[M]
             else:
-                children.append(self.__p[x.f[c].l:x.f[c].r+1])
-        print(str(children) + "\n")
+                if self.__rlcp[M] >= r:
+                    m = r + self.__lcp(r + 1, r + 1, a[pos[M]:], w)
+                else:
+                    m = self.__rlcp[M]
+            if m >= len(w):
+                return a[pos[M]:]
+            if m < len(a[pos[M]:]) and w[m] <= a[pos[M] + m]:
+                R, r = M, m
+            else:
+                L, l = M, m
 
-        for c in x.f:
-            if c != "$":
-                self.__print(x.f[c])
+        if self.__lcp(0, 0, a[pos[R]:], w) < len(w):
+            return -1
+        return a[pos[R]:]
+
+    def __find_index(self, node, array):
+        if node.end:
+            array.append(node.idx)
+        for char in node.sub:
+            self.__find_index(node.sub[char], array)
+
+    def __get_end_node(self, pattern):
+        cur = self.__root
+        for c in pattern:
+            if c not in cur.sub:
+                return None
+            cur = cur.sub[c]
+        return cur
+
+    def __put(self, string, idx):
+        cur = self.__root
+        for c in string:
+            if c not in cur.sub:
+                cur.sub[c] = self.__Node(c, 0)
+            cur = cur.sub[c]
+            cur.val += 1
+        cur.end = True
+        cur.idx = idx
+
+    def __build(self):
+        for i in range(len(self.__txt)):
+            self.__put(self.__txt[i:], i)
