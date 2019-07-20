@@ -27,7 +27,6 @@ class TestTreap(unittest.TestCase):
 
         for i in range(1, 20):
             bst.put(i, str(i))
-            print(str(bst.keys_level_order()))
             self.assertEqual(i, len(bst))
 
             self.assertIn(i, bst)

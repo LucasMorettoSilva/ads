@@ -1,6 +1,5 @@
 import unittest
 
-from src.tree.suffix_tree_linear import SuffixTreeLinear
 from src.tree.suffix_tree        import SuffixTree
 
 
@@ -41,5 +40,3 @@ class TestSuffixTree(unittest.TestCase):
         trie = SuffixTree("banana")
         self.assertEqual(0, trie.count("e"))
         self.assertEqual(0, trie.count("nanan"))
-
-

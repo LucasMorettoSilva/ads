@@ -3,6 +3,18 @@ import random
 
 class Treap:
 
+    class __TreapIterator:
+
+        def __init__(self, keys):
+            self.keys = keys
+            self.i    = -1
+
+        def __next__(self):
+            self.i += 1
+            if self.i >= len(self.keys):
+                raise StopIteration
+            return self.keys[self.i]
+
     class __Node:
 
         def __init__(self, key, value, height=0, size=1):
@@ -17,7 +29,6 @@ class Treap:
     def __init__(self, cmp=None):
         self.__cmp   = cmp
         self.__root  = None
-        self.__count = 0
 
     def __len__(self):
         return self.__size(self.__root)
@@ -37,30 +48,20 @@ class Treap:
     def __iter__(self):
         return self.__TreapIterator(self.keys_in_order())
 
-    @property
-    def counter(self):
-        return self.__count
-
     def max(self):
-        self.__count = 0
-
         if self.empty():
             return None
         cur = self.__root
         while cur.right is not None:
             cur = cur.right
-            self.__count += 1
         return cur.key
 
     def min(self):
-        self.__count = 0
-
         if self.empty():
             return None
         cur = self.__root
         while cur.left is not None:
             cur = cur.left
-            self.__count += 1
         return cur.key
 
     def empty(self):
@@ -70,8 +71,6 @@ class Treap:
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
 
-        self.__count = 0
-
         x = self.__get(self.__root, key)
         if x is None:
             return None
@@ -80,8 +79,6 @@ class Treap:
     def __get(self, x, key):
         if x is None:
             return None
-
-        self.__count += 1
 
         cmp = self.__compare(key, x.key)
         if   cmp < 0:
@@ -97,8 +94,6 @@ class Treap:
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
 
-        self.__count = 0
-
         if value is None:
             self.delete(key)
             return
@@ -108,8 +103,6 @@ class Treap:
     def __put(self, x, key, value):
         if x is None:
             return self.__Node(key, value)
-
-        self.__count += 1
 
         cmp = self.__compare(key, x.key)
         if   cmp < 0:
@@ -127,14 +120,11 @@ class Treap:
     def delete(self, key):
         if key is None:
             raise ValueError("Illegal argument 'key' of None Type")
-        self.__count = 0
         self.__root  = self.__delete(self.__root, key)
 
     def __delete(self, x, key):
         if x is None:
             return None
-
-        self.__count += 1
 
         cmp = self.__compare(key, x.key)
         if   cmp < 0:
@@ -161,14 +151,11 @@ class Treap:
     def delete_min(self):
         if self.empty():
             return
-        self.__count = 0
         self.__root  = self.__delete_min(self.__root)
 
     def __delete_min(self, x):
         if x is None:
             return None
-
-        self.__count += 1
 
         if x.left is None:
             return x.right
@@ -179,14 +166,11 @@ class Treap:
     def delete_max(self):
         if self.empty():
             return
-        self.__count = 0
         self.__root  = self.__delete_max(self.__root)
 
     def __delete_max(self, x):
         if x is None:
             return None
-
-        self.__count += 1
 
         if x.right is None:
             return x.left
@@ -299,15 +283,3 @@ class Treap:
                 return self.__rotate_right(x)
             return self.__rotate_left(x)
         return x
-
-    class __TreapIterator:
-
-        def __init__(self, keys):
-            self.keys = keys
-            self.i    = -1
-
-        def __next__(self):
-            self.i += 1
-            if self.i >= len(self.keys):
-                raise StopIteration
-            return self.keys[self.i]

@@ -39,7 +39,7 @@ class SuffixTree:
 
     def __build_lcp(self):
         n    = len(self.__sa)
-        lcp  = [0] * n
+        lcp  = [0] * (n - 1)
 
         rank = [0] * n
         for i in range(n):
@@ -75,6 +75,14 @@ class SuffixTree:
         return x.val
 
     @property
+    def llcp(self):
+        return self.__llcp
+
+    @property
+    def rlcp(self):
+        return self.__rlcp
+
+    @property
     def suffix_array(self):
         return self.__sa
 
@@ -95,12 +103,12 @@ class SuffixTree:
     def __build_lcp_lr(lcp1):
         llcp  = [0] * len(lcp1)
         rlcp  = [0] * len(lcp1)
-        lcp1 += [0]
 
         def compute_lr(l, r):
             if l == r - 1:
                 return lcp1[l]
             c = (l + r) // 2
+            print(c)
             llcp[c - 1] = compute_lr(l, c)
             rlcp[c - 1] = compute_lr(c, r)
             return min(llcp[c - 1], rlcp[c - 1])
